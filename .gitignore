@@ -1,0 +1,4 @@
+# Project exclude paths
+/wsj-auth/target/
+/wsj-common/target/
+/wsj-register/target/
