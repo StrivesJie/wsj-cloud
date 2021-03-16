@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: FEBS-Register
+    name: wsj-register
   security:
     user:
       name: wsj
