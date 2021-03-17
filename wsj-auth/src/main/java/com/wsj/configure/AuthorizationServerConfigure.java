@@ -16,6 +16,8 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
+import java.util.UUID;
+
 /**
  * @Auther: wsj
  * @Date: 2021/3/15 20
@@ -51,8 +53,10 @@ public class AuthorizationServerConfigure extends AuthorizationServerConfigurerA
                 .tokenServices(defaultTokenServices());
     }
     @Bean
-    public TokenStore tokenStore(){
-        return new RedisTokenStore(redisConnectionFactory);
+    public TokenStore tokenStore() {
+        RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
+        redisTokenStore.setAuthenticationKeyGenerator(oAuth2Authentication -> UUID.randomUUID().toString());
+        return redisTokenStore;
     }
 
     @Primary
