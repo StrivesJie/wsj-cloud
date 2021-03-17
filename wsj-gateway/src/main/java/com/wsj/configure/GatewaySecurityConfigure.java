@@ -1,14 +1,11 @@
 package com.wsj.configure;
 
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-
 /**
  * @Auther: wsj
  * @Date: 2021/3/16 16
  * @Description:
  */
+/*
 @EnableWebSecurity
 public class GatewaySecurityConfigure extends WebSecurityConfigurerAdapter {
 
@@ -17,3 +14,4 @@ public class GatewaySecurityConfigure extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
     }
 }
+*/
