@@ -2,12 +2,14 @@ package com.wsj;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
-public class WsjAuthApplication {
+@EnableDiscoveryClient
+public class WsjTestApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(WsjAuthApplication.class, args);
+        SpringApplication.run(WsjTestApplication.class, args);
     }
 
 }

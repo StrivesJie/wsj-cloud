@@ -8,11 +8,17 @@ spring:
       discovery:
         locator:
           enabled: true # 开启从注册中心动态创建路由的功能
-        routes:
-          - id: auth_route
-            uri: lb://wsj-auth:8101 # lb协议表示启用负载均衡功能，然后后面跟着微服务名称
-            predicates:
-              - Path=/auth/**
+          lowerCaseServiceId: true # 请求服务是小写的时候改成true（默认为false轻微服务必须是大写）
+      routes:
+        - id: auth_route
+          uri: lb://wsj-auth # lb协议表示启用负载均衡功能，然后后面跟着微服务名称
+          predicates:
+            - Path=/auth/**
+        - id: test_route
+          uri: lb://wsj-test # lb协议表示启用负载均衡功能，然后后面跟着微服务名称
+          predicates:
+            - Path=/wsj/**
+
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
