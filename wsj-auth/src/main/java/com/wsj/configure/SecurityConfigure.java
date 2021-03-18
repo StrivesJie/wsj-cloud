@@ -3,6 +3,7 @@ package com.wsj.configure;
 import com.wsj.service.EsmUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @Description:
  */
 @Order(2)
+@Configuration
 @EnableWebSecurity
 public class SecurityConfigure extends WebSecurityConfigurerAdapter {
     @Autowired
@@ -36,13 +38,16 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.requestMatchers()
-                .antMatchers("/oauth/**")
-                .and()
+        http.csrf()
+                .disable()
                 .authorizeRequests()
-                .antMatchers("/oauth/**").authenticated()
+                .antMatchers("/oauth/**", "/login/**", "/logout/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
-                .csrf().disable();
+                .formLogin()
+                .permitAll();
     }
 
     @Override

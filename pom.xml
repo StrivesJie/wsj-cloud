@@ -12,6 +12,7 @@
         <module>wsj-common</module>
         <module>wsj-auth</module>
         <module>wsj-gateway</module>
+        <module>wsj-test</module>
     </modules>
 
 
