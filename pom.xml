@@ -28,6 +28,11 @@
         <spring-cloud.version>Hoxton.SR10</spring-cloud.version>
         <com-alibaba.cloud.version>2.2.1.RELEASE</com-alibaba.cloud.version>
         <jackson.version>2.12.2</jackson.version>
+        <fastjson.version>1.2.75</fastjson.version>
+        <nimbusds-jwt.version>9.7</nimbusds-jwt.version>
+        <hutool.version>5.6.1</hutool.version>
+        <ip2region.version>1.7.2</ip2region.version>
+        <collections.version>4.4</collections.version>
     </properties>
 
 

@@ -1,7 +1,11 @@
 package com.wsj.configure;
 
+import com.wsj.properties.AuthProperties;
 import com.wsj.service.EsmUserDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.wsj.service.impl.RedisAuthenticationCodeService;
+import com.wsj.service.impl.RedisClientDetailsService;
+import com.wsj.translator.AuthWebResponseExceptionTranslator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -13,8 +17,12 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 import java.util.UUID;
@@ -26,18 +34,18 @@ import java.util.UUID;
  */
 @Configuration
 @EnableAuthorizationServer
+@RequiredArgsConstructor
 public class AuthorizationServerConfigure extends AuthorizationServerConfigurerAdapter {
+    private final AuthProperties properties;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
-    @Autowired
-    private EsmUserDetailService userDetailService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtTokenEnhancer jwtTokenEnhancer;
+    private final AuthenticationManager authenticationManager;
+    private final EsmUserDetailService userDetailService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthWebResponseExceptionTranslator exceptionTranslator;
+
+    private final RedisClientDetailsService redisClientDetailsService;
+    private final RedisConnectionFactory redisConnectionFactory;
+    private final RedisAuthenticationCodeService redisAuthenticationCodeService;
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -72,14 +80,33 @@ public class AuthorizationServerConfigure extends AuthorizationServerConfigurerA
         endpoints.tokenStore(tokenStore())
                 .userDetailsService(userDetailService)
                 .authenticationManager(authenticationManager)
-                .tokenServices(defaultTokenServices());
+                .exceptionTranslator(exceptionTranslator)
+                .authorizationCodeServices(redisAuthenticationCodeService);
+        if (properties.getEnableJwt()) {
+            endpoints.accessTokenConverter(jwtAccessTokenConverter());
+        }
     }
 
     @Bean
     public TokenStore tokenStore() {
-        RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
-        redisTokenStore.setAuthenticationKeyGenerator(oAuth2Authentication -> UUID.randomUUID().toString());
-        return redisTokenStore;
+        if (properties.getEnableJwt()) {
+            return new JwtTokenStore(jwtAccessTokenConverter());
+        } else {
+            RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
+            redisTokenStore.setAuthenticationKeyGenerator(oAuth2Authentication -> UUID.randomUUID().toString());
+            return redisTokenStore;
+        }
+    }
+
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
+        DefaultAccessTokenConverter defaultAccessTokenConverter = (DefaultAccessTokenConverter) accessTokenConverter.getAccessTokenConverter();
+        DefaultUserAuthenticationConverter userAuthenticationConverter = new DefaultUserAuthenticationConverter();
+        userAuthenticationConverter.setUserDetailsService(userDetailService);
+        defaultAccessTokenConverter.setUserTokenConverter(userAuthenticationConverter);
+        accessTokenConverter.setSigningKey(properties.getJwtAccessKey());
+        return accessTokenConverter;
     }
 
     @Primary
