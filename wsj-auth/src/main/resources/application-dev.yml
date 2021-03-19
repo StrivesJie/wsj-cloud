@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: wsj-auth
+    name: wsj-auth2-jwt
   redis:
     database: 0
     host: localhost
@@ -19,8 +19,10 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: *
+  jackson:
+    date-format: yyyy-MM-dd hh:mm:ss
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

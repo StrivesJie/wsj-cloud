@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class EsmUserDetailService implements UserDetailsService {
+
+    //private List<UserDTO> userList;
     @Autowired
     private PasswordEncoder passwordEncoder;
 

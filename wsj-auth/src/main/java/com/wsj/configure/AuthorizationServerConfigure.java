@@ -36,6 +36,8 @@ public class AuthorizationServerConfigure extends AuthorizationServerConfigurerA
     private EsmUserDetailService userDetailService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtTokenEnhancer jwtTokenEnhancer;
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
